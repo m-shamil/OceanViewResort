@@ -1,0 +1,1157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ocean View — Dashboard</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400;1,700&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    /* ── Light Mode (default) ── */
+    :root {
+      --bg:        #f0f5fa;
+      --bg2:       #ffffff;
+      --bg3:       #e2eaf4;
+      --sidebar:   #ffffff;
+      --primary:   #3a7bbf;
+      --primary2:  #2a5f9e;
+      --accent:    #d4875a;
+      --accent2:   #e8a070;
+      --ink:       #0d1b2a;
+      --muted:     #445568;
+      --muted2:    #566578;
+      --border:    rgba(58,123,191,.15);
+      --success:   #3a9e6f;
+      --error:     #d94f4f;
+      --warn:      #d4875a;
+      --radius:    8px;
+      --card-shadow: 0 2px 12px rgba(58,123,191,.08);
+    }
+
+    /* ── Dark Mode ── */
+    body.dark {
+      --bg:        #111a27;
+      --bg2:       #172033;
+      --bg3:       #1e2d42;
+      --sidebar:   #141f30;
+      --primary:   #5b9bd5;
+      --primary2:  #3a7bbf;
+      --accent:    #e8a070;
+      --accent2:   #f0b888;
+      --ink:       #f0f6ff;
+      --muted:     #9eb4cc;
+      --muted2:    #b0c6dc;
+      --border:    rgba(91,155,213,.15);
+      --success:   #4caf87;
+      --error:     #e05c5c;
+      --warn:      #e0a050;
+      --card-shadow: 0 2px 12px rgba(0,0,0,.25);
+    }
+
+    html, body { height: 100%; background: var(--bg); font-family: 'Outfit', sans-serif; color: var(--ink); font-size: 15px; transition: background .3s, color .3s; }
+
+    /* ── Layout ── */
+    .app { display: flex; height: 100vh; overflow: hidden; }
+
+    /* ── Sidebar ── */
+    .sidebar {
+      width: 248px; flex-shrink: 0;
+      background: var(--sidebar);
+      border-right: 1px solid var(--border);
+      display: flex; flex-direction: column;
+      overflow-y: auto;
+      box-shadow: 2px 0 12px rgba(58,123,191,.06);
+      transition: background .3s;
+    }
+
+    .sidebar-brand {
+      padding: 24px 20px 20px;
+      border-bottom: 1px solid var(--border);
+      background: linear-gradient(135deg, var(--primary2), var(--primary));
+    }
+    .sidebar-brand h2 {
+      font-family: 'Playfair Display', serif;
+      font-size: 20px; font-weight: 700;
+      color: #ffffff;
+      line-height: 1.2;
+    }
+    .sidebar-brand h2 span { color: #f0b888; }
+    .sidebar-brand small { font-size: 10px; letter-spacing: 2.5px; text-transform: uppercase; color: rgba(255,255,255,.6); margin-top: 4px; display: block; }
+
+    /* Dark mode sidebar brand */
+    body.dark .sidebar-brand {
+      background: #141f30;
+      border-bottom: 1px solid rgba(91,155,213,.2);
+    }
+    body.dark .sidebar-brand h2 { color: #e8f0fa; }
+    body.dark .sidebar-brand h2 span { color: #e8a070; }
+    body.dark .sidebar-brand small { color: rgba(255,255,255,.35); }
+    body.dark .sidebar-brand .wave-circle {
+      background: rgba(91,155,213,.12) !important;
+      border-color: rgba(91,155,213,.25) !important;
+    }
+
+    .sidebar-user {
+      padding: 14px 18px;
+      border-bottom: 1px solid var(--border);
+      display: flex; align-items: center; gap: 10px;
+      background: var(--bg3);
+      transition: background .3s;
+    }
+    .user-avatar {
+      width: 36px; height: 36px; border-radius: 50%;
+      background: linear-gradient(135deg, var(--primary), var(--accent));
+      display: flex; align-items: center; justify-content: center;
+      font-size: 13px; font-weight: 700; color: #fff;
+      flex-shrink: 0;
+    }
+    .user-info small { display: block; font-size: 10px; color: var(--muted); text-transform: uppercase; letter-spacing: 1px; }
+    .user-info p { font-size: 13px; font-weight: 600; color: var(--ink); }
+
+    .sidebar-nav { flex: 1; padding: 12px 10px; }
+    .nav-group-label {
+      font-size: 9px; letter-spacing: 2px; text-transform: uppercase;
+      color: var(--muted); padding: 14px 10px 6px;
+      font-weight: 600;
+    }
+    .nav-item {
+      display: flex; align-items: center; gap: 10px;
+      padding: 10px 14px; border-radius: var(--radius);
+      cursor: pointer; transition: all .15s;
+      font-size: 14.5px; color: var(--muted);
+      user-select: none; margin-bottom: 2px; font-weight: 500;
+    }
+    .nav-item:hover { background: var(--bg3); color: var(--ink); }
+    .nav-item.active { background: rgba(58,123,191,.12); color: var(--primary); font-weight: 600; }
+    .nav-item .icon { width: 20px; text-align: center; font-size: 15px; }
+    .nav-item.admin-only { display: none; }
+
+    .sidebar-footer {
+      padding: 14px 10px;
+      border-top: 1px solid var(--border);
+    }
+
+    /* ── Main ── */
+    .main { flex: 1; display: flex; flex-direction: column; overflow: hidden; background: var(--bg); transition: background .3s; }
+
+    .topbar {
+      height: 58px; flex-shrink: 0;
+      background: var(--bg2);
+      border-bottom: 1px solid var(--border);
+      display: flex; align-items: center;
+      padding: 0 28px; gap: 12px;
+      box-shadow: 0 1px 8px rgba(58,123,191,.06);
+      transition: background .3s;
+    }
+    .topbar h3 { font-size: 18px; font-weight: 700; color: var(--ink); flex: 1; font-family: 'Playfair Display', serif; }
+    .topbar-badge {
+      font-size: 11px; letter-spacing: 1px; text-transform: uppercase;
+      padding: 5px 12px; border-radius: 20px;
+      background: rgba(58,123,191,.1); color: var(--primary); border: 1px solid var(--border);
+      font-weight: 500;
+    }
+
+    /* Dark mode toggle in topbar */
+    .dark-toggle {
+      background: var(--bg3);
+      border: 1px solid var(--border);
+      border-radius: 50px;
+      padding: 6px 14px;
+      font-family: 'Outfit', sans-serif;
+      font-size: 12px; font-weight: 500;
+      color: var(--ink); cursor: pointer;
+      display: flex; align-items: center; gap: 6px;
+      transition: all .2s;
+    }
+    .dark-toggle:hover { box-shadow: 0 2px 8px rgba(0,0,0,.1); transform: translateY(-1px); }
+
+    .content { flex: 1; overflow-y: auto; padding: 28px; }
+
+    /* ── Pages ── */
+    .page { display: none; }
+    .page.active { display: block; animation: fadeIn .2s ease; }
+    @keyframes fadeIn { from { opacity:0; transform: translateY(8px); } to { opacity:1; transform: translateY(0); } }
+
+    /* ── Cards ── */
+    .card {
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 24px;
+      margin-bottom: 20px;
+      box-shadow: var(--card-shadow);
+      transition: background .3s;
+    }
+    .card-title {
+      font-family: 'Playfair Display', serif;
+      font-size: 22px; font-weight: 700;
+      color: var(--ink); margin-bottom: 4px;
+    }
+    .card-sub { font-size: 13.5px; color: var(--muted); margin-bottom: 20px; }
+
+    .stats-grid {
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(160px,1fr));
+      gap: 16px; margin-bottom: 24px;
+    }
+    .stat-card {
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      border-radius: 12px; padding: 20px 22px;
+      box-shadow: var(--card-shadow);
+      transition: background .3s, transform .2s;
+      position: relative; overflow: hidden;
+    }
+    .stat-card::before {
+      content: ''; position: absolute;
+      top: 0; left: 0; right: 0; height: 3px;
+      background: linear-gradient(90deg, var(--primary), var(--accent));
+    }
+    .stat-card:hover { transform: translateY(-2px); }
+    .stat-card small { font-size: 15px; letter-spacing: 1.5px; text-transform: uppercase; color: var(--muted); font-weight: 600; }
+    .stat-card .value { font-size: 58px; font-weight: 700; color: var(--primary); margin: 10px 0 0; font-family: 'Playfair Display', serif; }
+    .stat-card .sub   { font-size: 14px; color: var(--muted); }
+
+    /* ── Forms ── */
+    .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+    .form-grid.single { grid-template-columns: 1fr; }
+    .field { margin-bottom: 0; }
+    .field label {
+      display: block; font-size: 10px; letter-spacing: 1.5px;
+      text-transform: uppercase; color: var(--primary2); margin-bottom: 6px; font-weight: 600;
+    }
+    .field input, .field select {
+      width: 100%;
+      background: var(--bg3);
+      border: 1.5px solid transparent;
+      border-radius: var(--radius);
+      padding: 10px 13px;
+      color: var(--ink);
+      font-family: 'Outfit', sans-serif;
+      font-size: 14.5px; outline: none;
+      transition: all .2s;
+    }
+    .field input:focus, .field select:focus {
+      border-color: var(--primary);
+      background: var(--bg2);
+      box-shadow: 0 0 0 3px rgba(58,123,191,.1);
+    }
+    .field input::placeholder { color: var(--muted2); }
+    .field select option { background: var(--bg2); color: var(--ink); }
+    .span-full { grid-column: 1 / -1; }
+
+    .btn { padding: 9px 20px; border-radius: var(--radius); border: none; cursor: pointer; font-family: 'Outfit', sans-serif; font-size: 13px; font-weight: 600; transition: all .15s; }
+    .btn-gold   { background: linear-gradient(135deg, var(--primary), var(--primary2)); color: #fff; }
+    .btn-gold:hover { opacity:.9; transform:translateY(-1px); box-shadow: 0 4px 12px rgba(58,123,191,.3); }
+    .btn-ghost  { background: var(--bg3); color: var(--muted); border: 1px solid var(--border); }
+    .btn-ghost:hover { background: var(--bg); color: var(--ink); }
+    .btn-danger { background: rgba(217,79,79,.1); color: var(--error); border: 1px solid rgba(217,79,79,.2); }
+    .btn-danger:hover { background: rgba(217,79,79,.2); }
+    .btn-sm { padding: 5px 12px; font-size: 12px; }
+    .btn-row { display: flex; gap: 10px; margin-top: 18px; flex-wrap: wrap; }
+
+    /* ── Table ── */
+    .table-wrap { overflow-x: auto; border-radius: 10px; border: 1px solid var(--border); }
+    table { width: 100%; border-collapse: collapse; }
+    thead th {
+      background: var(--bg3);
+      padding: 12px 14px; text-align: left;
+      font-size: 10px; letter-spacing: 1.5px; text-transform: uppercase;
+      color: var(--muted); font-weight: 600;
+      border-bottom: 1px solid var(--border);
+    }
+    tbody tr { border-bottom: 1px solid var(--border); transition: background .1s; }
+    tbody tr:last-child { border-bottom: none; }
+    tbody tr:hover { background: var(--bg3); }
+    tbody td { padding: 12px 14px; font-size: 13px; color: var(--muted2); vertical-align: middle; }
+    tbody td:first-child { color: var(--ink); font-weight: 600; }
+
+    /* ── Badges ── */
+    .badge {
+      display: inline-block; padding: 3px 10px; border-radius: 20px;
+      font-size: 10px; letter-spacing: .5px; text-transform: uppercase; font-weight: 600;
+    }
+    .badge-admin    { background: rgba(58,123,191,.12);  color: var(--primary); }
+    .badge-staff    { background: rgba(100,140,200,.12); color: #5a8fd4; }
+    .badge-active   { background: rgba(58,158,111,.12);  color: var(--success); }
+    .badge-inactive { background: rgba(217,79,79,.12);   color: var(--error); }
+    .badge-confirmed{ background: rgba(58,158,111,.12);  color: var(--success); }
+    .badge-checked_in  { background: rgba(58,123,191,.12); color: var(--primary); }
+    .badge-checked_out { background: rgba(130,130,160,.12); color: var(--muted); }
+    .badge-cancelled   { background: rgba(217,79,79,.12);   color: var(--error); }
+
+    /* ── Alert ── */
+    .alert { padding: 10px 14px; border-radius: var(--radius); font-size: 13px; margin-bottom: 16px; display: none; }
+    .alert.error   { background: rgba(217,79,79,.08);   color: var(--error);   border:1px solid rgba(217,79,79,.2); display:block; }
+    .alert.success { background: rgba(58,158,111,.08);  color: var(--success); border:1px solid rgba(58,158,111,.2); display:block; }
+    .alert.warn    { background: rgba(212,135,90,.08);  color: var(--warn);    border:1px solid rgba(212,135,90,.2); display:block; }
+
+    /* ── Modal ── */
+    .modal-overlay {
+      position: fixed; inset: 0; background: rgba(26,37,53,.5);
+      display: flex; align-items: center; justify-content: center;
+      z-index: 1000; padding: 20px;
+      opacity: 0; pointer-events: none; transition: opacity .2s;
+      backdrop-filter: blur(4px);
+    }
+    .modal-overlay.open { opacity: 1; pointer-events: all; }
+    .modal {
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 28px;
+      width: 100%; max-width: 500px;
+      max-height: 90vh; overflow-y: auto;
+      transform: translateY(12px); transition: transform .2s;
+      box-shadow: 0 20px 60px rgba(58,123,191,.15);
+    }
+    .modal-overlay.open .modal { transform: translateY(0); }
+    .modal h3 { font-family: 'Playfair Display', serif; font-size: 22px; margin-bottom: 20px; color: var(--ink); font-weight: 700; }
+    .modal-footer { display: flex; gap: 10px; justify-content: flex-end; margin-top: 22px; }
+
+    /* ── Bill Receipt ── */
+    .receipt {
+      background: var(--bg3);
+      border: 1px solid var(--border);
+      border-radius: 12px; padding: 24px;
+    }
+    .receipt-header { text-align: center; margin-bottom: 18px; border-bottom: 1px solid var(--border); padding-bottom: 14px; }
+    .receipt-header small { font-size: 11px; color: var(--muted); letter-spacing: 1px; }
+    .receipt-logo {
+      display: inline-flex; align-items: center; gap: 10px;
+      margin-bottom: 6px;
+    }
+    .receipt-logo-icon {
+      width: 42px; height: 42px; flex-shrink: 0;
+    }
+    .receipt-logo-text {
+      text-align: left;
+    }
+    .receipt-logo-text h2 {
+      font-family: 'Playfair Display', serif;
+      font-size: 22px; font-weight: 700;
+      color: var(--primary); line-height: 1.1; margin: 0;
+    }
+    .receipt-logo-text .logo-tagline {
+      font-size: 9px; letter-spacing: 2.5px; text-transform: uppercase;
+      color: var(--muted); display: block; margin-top: 2px;
+    }
+    /* Print: keep logo colours crisp */
+    @media print {
+      .receipt-logo-text h2 { color: #2a5f9e !important; }
+      .receipt-logo-text .logo-tagline { color: #666 !important; }
+    }
+    .receipt-row { display: flex; justify-content: space-between; font-size: 13px; color: var(--muted); padding: 5px 0; }
+    .receipt-row span:last-child { color: var(--ink); font-weight: 500; }
+    .receipt-row.total-row { border-top: 1.5px dashed var(--border); margin-top: 8px; padding-top: 10px; font-weight: 700; font-size: 15px; }
+    .receipt-row.total-row span:last-child { color: var(--accent); font-size: 17px; }
+    .receipt-footer { text-align: center; margin-top: 16px; font-size: 11px; color: var(--muted); letter-spacing: .5px; }
+
+    /* ── Help Page ── */
+    .help-cards { display: flex; flex-direction: column; gap: 14px; }
+
+    .hcard {
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 20px 22px;
+      position: relative; overflow: hidden;
+      transition: box-shadow .2s, border-color .2s;
+    }
+    .hcard:hover { box-shadow: var(--card-shadow); }
+    .hcard::before {
+      content:''; position:absolute; top:0;left:0;right:0; height:3px;
+      opacity:0; transition:opacity .2s; border-radius:var(--radius) var(--radius) 0 0;
+    }
+    .hcard:hover::before { opacity:1; }
+    .hcard.hc-blue::before   { background: linear-gradient(90deg, var(--primary), transparent); }
+    .hcard.hc-teal::before   { background: linear-gradient(90deg, var(--success), transparent); }
+    .hcard.hc-accent::before { background: linear-gradient(90deg, var(--accent),  transparent); }
+    .hcard.hc-error::before  { background: linear-gradient(90deg, var(--error),   transparent); }
+
+    .hcard-head {
+      display:flex; align-items:center; gap:13px;
+      margin-bottom:16px; padding-bottom:14px;
+      border-bottom:1px solid var(--border);
+    }
+    .hcard-icon {
+      width:40px; height:40px; border-radius:10px; flex-shrink:0;
+      display:flex; align-items:center; justify-content:center;
+    }
+    .hcard-icon svg { width:20px;height:20px; fill:none; stroke-width:1.8; stroke-linecap:round; stroke-linejoin:round; }
+    .hc-blue   .hcard-icon { background:rgba(58,123,191,.12); } .hc-blue   .hcard-icon svg { stroke:var(--primary); }
+    .hc-teal   .hcard-icon { background:rgba(58,158,111,.12); } .hc-teal   .hcard-icon svg { stroke:var(--success); }
+    .hc-accent .hcard-icon { background:rgba(212,135,90,.12); } .hc-accent .hcard-icon svg { stroke:var(--accent);  }
+    .hc-error  .hcard-icon { background:rgba(217,79,79,.12);  } .hc-error  .hcard-icon svg { stroke:var(--error);   }
+
+    .hcard-title {
+      font-family: 'Playfair Display', serif;
+      font-size: 17px; font-weight: 700; color: var(--ink);
+    }
+    .hcard-badge {
+      font-size:9px; letter-spacing:1.5px; text-transform:uppercase;
+      padding:2px 8px; border-radius:20px; margin-left:6px;
+      background:rgba(58,123,191,.1); color:var(--primary);
+      border:1px solid rgba(58,123,191,.2);
+    }
+    .hcard-body { font-size:15px; color:var(--muted2); line-height:1.75; }
+
+    .hguide-list { list-style:none; display:flex; flex-direction:column; gap:9px; }
+    .hguide-item {
+      display:flex; align-items:flex-start; gap:12px;
+      padding:11px 14px; border-radius:8px;
+      background:var(--bg3); border:1px solid transparent;
+      transition:all .15s;
+    }
+    .hguide-item:hover { border-color:var(--border); transform:translateX(3px); }
+    .hguide-bullet {
+      width:32px; height:32px; border-radius:8px; flex-shrink:0;
+      display:flex; align-items:center; justify-content:center;
+    }
+    .hguide-bullet svg { width:15px;height:15px; fill:none; stroke-width:2.2; stroke-linecap:round; stroke-linejoin:round; }
+    .hc-blue .hguide-bullet { background:rgba(58,123,191,.12); } .hc-blue .hguide-bullet svg { stroke:var(--primary); }
+    .hc-teal .hguide-bullet { background:rgba(58,158,111,.12); } .hc-teal .hguide-bullet svg { stroke:var(--success); }
+
+    .hguide-text { flex:1; font-size:14.5px; color:var(--muted2); line-height:1.6; }
+    .hguide-text strong { color:var(--ink); font-weight:600; }
+
+    .htip-grid { display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+    .htip {
+      padding:14px 16px; border-radius:8px;
+      background:var(--bg3); border:1px solid var(--border);
+      transition:all .15s;
+    }
+    .htip:hover { border-color:rgba(58,123,191,.3); box-shadow:var(--card-shadow); }
+    .htip-icon svg { width:20px;height:20px; fill:none; stroke:var(--primary); stroke-width:1.7; stroke-linecap:round; stroke-linejoin:round; display:block; margin-bottom:8px; }
+    .htip-label { font-size:14.5px; font-weight:600; color:var(--ink); margin-bottom:3px; }
+    .htip-desc  { font-size:13.5px; color:var(--muted); line-height:1.5; }
+
+    /* ── Print styles ── */
+    @media print {
+      .sidebar, .topbar, .btn-row, .no-print { display: none !important; }
+      body { background: white; color: black; }
+      .receipt { background: white; border: 1px solid #ccc; }
+      .receipt-header h2 { color: #2a5f9e; }
+      .receipt-row { color: #444; }
+      .receipt-row span:last-child { color: #111; }
+      .content { padding: 0; }
+    }
+
+    /* ── Scrollbar ── */
+    ::-webkit-scrollbar { width: 5px; height: 5px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 10px; }
+  </style>
+</head>
+<body>
+
+<div class="app">
+
+  <!-- ── Sidebar ── -->
+  <aside class="sidebar">
+    <div class="sidebar-brand">
+      <div style="display:flex;align-items:center;gap:12px">
+        <div class="wave-circle" style="width:42px;height:42px;border-radius:50%;overflow:hidden;flex-shrink:0;">
+          <svg width="42" height="42" viewBox="0 0 110 110" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+              <linearGradient id="ls" x1="0" y1="0" x2="0" y2="65" gradientUnits="userSpaceOnUse"><stop offset="0%" stop-color="#78C8E8"/><stop offset="50%" stop-color="#FFD170"/><stop offset="100%" stop-color="#FF7A30"/></linearGradient>
+              <linearGradient id="lw" x1="0" y1="65" x2="0" y2="110" gradientUnits="userSpaceOnUse"><stop offset="0%" stop-color="#22A8D8"/><stop offset="100%" stop-color="#0D6FA8"/></linearGradient>
+              <radialGradient id="lu" cx="50%" cy="80%" r="60%"><stop offset="0%" stop-color="#FFE84A"/><stop offset="60%" stop-color="#FFAD20"/><stop offset="100%" stop-color="#FF6A10"/></radialGradient>
+              <clipPath id="lc"><circle cx="55" cy="55" r="52"/></clipPath>
+            </defs>
+            <circle cx="55" cy="55" r="54" fill="white"/>
+            <g clip-path="url(#lc)">
+              <rect x="3" y="3" width="104" height="104" fill="url(#ls)"/>
+              <clipPath id="lsc"><rect x="0" y="0" width="110" height="66"/></clipPath>
+              <circle cx="55" cy="66" r="20" fill="url(#lu)" clip-path="url(#lsc)"/>
+              <rect x="3" y="66" width="104" height="47" fill="url(#lw)"/>
+              <path d="M3 72 Q22 65 41 72 Q60 79 79 72 Q95 67 107 72" stroke="white" stroke-width="2.2" stroke-linecap="round" fill="none" opacity="0.8"/>
+              <path d="M3 84 Q22 78 41 84 Q60 90 79 84 Q95 80 107 84" stroke="white" stroke-width="1.4" stroke-linecap="round" fill="none" opacity="0.4"/>
+              <path d="M28 114 Q30 96 32 80 Q34 70 36 62" stroke="#5A3418" stroke-width="4" stroke-linecap="round" fill="none"/>
+              <path d="M36 62 Q24 54 18 60 Q28 50 36 62" fill="#2E962E"/>
+              <path d="M36 62 Q46 54 54 58 Q44 48 36 62" fill="#34AA34"/>
+              <path d="M36 62 Q30 50 34 43 Q36 55 36 62" fill="#257A25"/>
+              <circle cx="35" cy="66" r="3.5" fill="#7A4D26"/>
+              <path d="M82 114 Q80 96 78 80 Q76 70 74 62" stroke="#5A3418" stroke-width="4" stroke-linecap="round" fill="none"/>
+              <path d="M74 62 Q86 54 92 60 Q82 50 74 62" fill="#2E962E"/>
+              <path d="M74 62 Q64 54 56 58 Q66 48 74 62" fill="#34AA34"/>
+              <path d="M74 62 Q80 50 76 43 Q74 55 74 62" fill="#257A25"/>
+              <circle cx="75" cy="66" r="3.5" fill="#7A4D26"/>
+            </g>
+          </svg>
+        </div>
+        <div>
+          <h2>Ocean <span>View</span></h2>
+          <small>Hotel Management</small>
+        </div>
+      </div>
+    </div>
+    <div class="sidebar-user">
+      <div class="user-avatar" id="avatar-initials">?</div>
+      <div class="user-info">
+        <small id="user-role-label">Role</small>
+        <p id="user-name-label">Loading…</p>
+      </div>
+    </div>
+    <nav class="sidebar-nav">
+      <div class="nav-group-label">Overview</div>
+      <div class="nav-item active" data-page="dashboard" onclick="navigate('dashboard')">
+        <span class="icon">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+        </span> Dashboard
+      </div>
+
+      <div class="nav-group-label">Management</div>
+      <div class="nav-item admin-only" data-page="staff" onclick="navigate('staff')">
+        <span class="icon">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+        </span> Staff Accounts
+      </div>
+      <div class="nav-item" data-page="reservations" onclick="navigate('reservations')">
+        <span class="icon">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/><line x1="8" y1="14" x2="8" y2="14"/><line x1="12" y1="14" x2="12" y2="14"/><line x1="16" y1="14" x2="16" y2="14"/></svg>
+        </span> Reservations
+      </div>
+      <div class="nav-item" data-page="billing" onclick="navigate('billing')">
+        <span class="icon">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg>
+        </span> Billing
+      </div>
+
+      <div class="nav-group-label">Support</div>
+      <div class="nav-item" data-page="help" onclick="navigate('help')">
+        <span class="icon">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+        </span> Help & Guidelines
+      </div>
+    </nav>
+    <div class="sidebar-footer">
+      <div class="nav-item" onclick="doLogout()" style="color:var(--primary);background:rgba(58,123,191,.1);border:1px solid rgba(58,123,191,.2);">
+        <span class="icon">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+        </span> Exit / Logout
+      </div>
+    </div>
+  </aside>
+
+  <!-- ── Main ── -->
+  <div class="main">
+    <div class="topbar">
+      <h3 id="page-title">Dashboard</h3>
+      <span class="topbar-badge" id="topbar-date"></span>
+      <button class="dark-toggle" onclick="toggleDark()" id="dark-btn">
+        <span id="toggle-icon">🌙</span>
+        <span id="dark-label">Dark</span>
+      </button>
+    </div>
+    <div class="content">
+
+      <!-- ═══════════ DASHBOARD ═══════════ -->
+      <div id="page-dashboard" class="page active">
+        <div class="stats-grid" id="stats-grid">
+          <div class="stat-card">
+            <div style="display:flex;justify-content:space-between;align-items:flex-start">
+              <small>Total Reservations</small>
+              <span style="color:var(--primary);opacity:.5">
+                <svg width="42" height="42" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+              </span>
+            </div>
+            <div class="value" id="stat-total">—</div>
+          </div>
+          <div class="stat-card">
+            <div style="display:flex;justify-content:space-between;align-items:flex-start">
+              <small>Confirmed</small>
+              <span style="color:var(--success);opacity:.6">
+                <svg width="42" height="42" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+              </span>
+            </div>
+            <div class="value" id="stat-confirmed">—</div>
+          </div>
+          <div class="stat-card">
+            <div style="display:flex;justify-content:space-between;align-items:flex-start">
+              <small>Checked In</small>
+              <span style="color:var(--accent);opacity:.6">
+                <svg width="42" height="42" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><polyline points="10 17 15 12 10 7"/><line x1="15" y1="12" x2="3" y2="12"/></svg>
+              </span>
+            </div>
+            <div class="value" id="stat-checkedin">—</div>
+          </div>
+          <div class="stat-card">
+            <div style="display:flex;justify-content:space-between;align-items:flex-start">
+              <small>Staff Accounts</small>
+              <span style="color:var(--primary);opacity:.5">
+                <svg width="42" height="42" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+              </span>
+            </div>
+            <div class="value" id="stat-staff">—</div>
+          </div>
+        </div>
+        <div class="card">
+          <p class="card-title">Recent Reservations</p>
+          <p class="card-sub">Latest 8 reservations in the system</p>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>Res. No.</th><th>Guest</th><th>Room</th><th>Check-in</th><th>Check-out</th><th>Status</th></tr></thead>
+              <tbody id="dash-table"><tr><td colspan="6" style="text-align:center;padding:20px;color:var(--muted)">Loading…</td></tr></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- ═══════════ STAFF ACCOUNTS (admin only) ═══════════ -->
+      <div id="page-staff" class="page">
+        <div class="card no-print">
+          <p class="card-title">Create Staff Account</p>
+          <p class="card-sub">Add a new staff or admin user to the system</p>
+          <div id="staff-form-alert" class="alert"></div>
+          <div class="form-grid">
+            <div class="field"><label>Full Name</label><input id="s-name"  type="text"     placeholder=""></div>
+            <div class="field"><label>Username</label> <input id="s-user"  type="text"     placeholder=""></div>
+            <div class="field"><label>Password</label> <input id="s-pass"  type="password" placeholder="Temporary password"></div>
+            <div class="field"><label>Email</label>    <input id="s-email" type="email"    placeholder=""></div>
+            <div class="field"><label>Role</label>
+              <select id="s-role"><option value="staff">Staff</option><option value="admin">Admin</option></select>
+            </div>
+          </div>
+          <div class="btn-row"><button class="btn btn-gold" onclick="createStaff()">Create Account</button></div>
+        </div>
+
+        <div class="card">
+          <p class="card-title">Staff Directory</p>
+          <p class="card-sub">All registered users in the system</p>
+          <div id="staff-table-alert" class="alert"></div>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>ID</th><th>Full Name</th><th>Username</th><th>Role</th><th>Email</th><th>Status</th><th>Actions</th></tr></thead>
+              <tbody id="staff-table"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- ═══════════ RESERVATIONS ═══════════ -->
+      <div id="page-reservations" class="page">
+        <div class="card no-print">
+          <p class="card-title">New Reservation</p>
+          <p class="card-sub">Fill in guest details and room preferences</p>
+          <div id="res-form-alert" class="alert"></div>
+          <div class="form-grid">
+            <div class="field"><label>Guest Name</label>   <input id="r-guest" type="text" placeholder="Guest full name"></div>
+            <div class="field"><label>Contact No.</label>  <input id="r-contact" type="text" placeholder="+94 7X XXX XXXX"></div>
+            <div class="field"><label>Room Type</label>
+              <select id="r-room"><option value="">— Select Room —</option></select>
+            </div>
+            <div class="field"><label>Check-in Date</label>  <input id="r-checkin"  type="date"></div>
+            <div class="field"><label>Check-out Date</label> <input id="r-checkout" type="date"></div>
+          </div>
+          <div class="btn-row"><button class="btn btn-gold" onclick="addReservation()">Add Reservation</button></div>
+        </div>
+
+        <div class="card">
+          <p class="card-title">Reservation Records</p>
+          <p class="card-sub">All reservations — click status to update</p>
+          <div id="res-table-alert" class="alert"></div>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>Res. No.</th><th>Guest</th><th>Room</th><th>Check-in</th><th>Check-out</th><th>Nights</th><th>Total</th><th>Status</th><th>Actions</th></tr></thead>
+              <tbody id="res-table"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- ═══════════ BILLING ═══════════ -->
+      <div id="page-billing" class="page">
+        <div class="card no-print">
+          <p class="card-title">Calculate & Print Bill</p>
+          <p class="card-sub">Enter a reservation number to generate the bill</p>
+          <div id="billing-alert" class="alert"></div>
+          <div class="form-grid">
+            <div class="field"><label>Reservation Number</label>
+              <input id="b-resno" type="text" placeholder="RES-YYYYMMDD-001">
+            </div>
+          </div>
+          <div class="btn-row">
+            <button class="btn btn-gold" onclick="calcBill()">Calculate Bill</button>
+            <button class="btn btn-ghost" id="print-btn" onclick="printBill()" style="display:none">🖨 Print Bill</button>
+          </div>
+        </div>
+
+        <div id="receipt-area" style="display:none">
+          <div class="receipt" id="receipt">
+            <div class="receipt-header">
+              <div class="receipt-logo">
+                <div style="width:42px;height:42px;border-radius:50%;overflow:hidden;flex-shrink:0;">
+                  <svg width="42" height="42" viewBox="0 0 110 110" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <defs>
+                      <linearGradient id="ls2" x1="0" y1="0" x2="0" y2="65" gradientUnits="userSpaceOnUse"><stop offset="0%" stop-color="#78C8E8"/><stop offset="50%" stop-color="#FFD170"/><stop offset="100%" stop-color="#FF7A30"/></linearGradient>
+                      <linearGradient id="lw2" x1="0" y1="65" x2="0" y2="110" gradientUnits="userSpaceOnUse"><stop offset="0%" stop-color="#22A8D8"/><stop offset="100%" stop-color="#0D6FA8"/></linearGradient>
+                      <radialGradient id="lu2" cx="50%" cy="80%" r="60%"><stop offset="0%" stop-color="#FFE84A"/><stop offset="60%" stop-color="#FFAD20"/><stop offset="100%" stop-color="#FF6A10"/></radialGradient>
+                      <clipPath id="lc2"><circle cx="55" cy="55" r="52"/></clipPath>
+                    </defs>
+                    <circle cx="55" cy="55" r="54" fill="white"/>
+                    <g clip-path="url(#lc2)">
+                      <rect x="3" y="3" width="104" height="104" fill="url(#ls2)"/>
+                      <clipPath id="lsc2"><rect x="0" y="0" width="110" height="66"/></clipPath>
+                      <circle cx="55" cy="66" r="20" fill="url(#lu2)" clip-path="url(#lsc2)"/>
+                      <rect x="3" y="66" width="104" height="47" fill="url(#lw2)"/>
+                      <path d="M3 72 Q22 65 41 72 Q60 79 79 72 Q95 67 107 72" stroke="white" stroke-width="2.2" stroke-linecap="round" fill="none" opacity="0.8"/>
+                      <path d="M3 84 Q22 78 41 84 Q60 90 79 84 Q95 80 107 84" stroke="white" stroke-width="1.4" stroke-linecap="round" fill="none" opacity="0.4"/>
+                      <path d="M28 114 Q30 96 32 80 Q34 70 36 62" stroke="#5A3418" stroke-width="4" stroke-linecap="round" fill="none"/>
+                      <path d="M36 62 Q24 54 18 60 Q28 50 36 62" fill="#2E962E"/>
+                      <path d="M36 62 Q46 54 54 58 Q44 48 36 62" fill="#34AA34"/>
+                      <path d="M36 62 Q30 50 34 43 Q36 55 36 62" fill="#257A25"/>
+                      <circle cx="35" cy="66" r="3.5" fill="#7A4D26"/>
+                      <path d="M82 114 Q80 96 78 80 Q76 70 74 62" stroke="#5A3418" stroke-width="4" stroke-linecap="round" fill="none"/>
+                      <path d="M74 62 Q86 54 92 60 Q82 50 74 62" fill="#2E962E"/>
+                      <path d="M74 62 Q64 54 56 58 Q66 48 74 62" fill="#34AA34"/>
+                      <path d="M74 62 Q80 50 76 43 Q74 55 74 62" fill="#257A25"/>
+                      <circle cx="75" cy="66" r="3.5" fill="#7A4D26"/>
+                    </g>
+                  </svg>
+                </div>
+                <div class="receipt-logo-text">
+                  <h2>Ocean <span style="color:var(--accent)">View</span></h2>
+                  <span class="logo-tagline">Hotel Management · Official Receipt</span>
+                </div>
+              </div>
+            </div>
+            <div id="receipt-rows"></div>
+            <div class="receipt-footer">Thank you for choosing Ocean View Hotel</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ═══════════ HELP ═══════════ -->
+      <div id="page-help" class="page">
+
+        <div class="help-cards">
+
+          <!-- LOGIN -->
+          <div class="hcard hc-blue">
+            <div class="hcard-head">
+              <div class="hcard-icon"><svg viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg></div>
+              <div class="hcard-title">Login</div>
+            </div>
+            <div class="hcard-body">Enter your username and password on the login screen. Contact your system administrator if you have forgotten your credentials.</div>
+          </div>
+
+          <!-- STAFF ACCOUNTS -->
+          <div class="hcard hc-blue">
+            <div class="hcard-head">
+              <div class="hcard-icon"><svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></div>
+              <div><span class="hcard-title">Staff Accounts</span><span class="hcard-badge">Admin Only</span></div>
+            </div>
+            <ul class="hguide-list">
+              <li class="hguide-item"><div class="hguide-bullet"><svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></div><div class="hguide-text"><strong>Create</strong> — Fill in all fields and click "Create Account" to register a new staff member.</div></li>
+              <li class="hguide-item"><div class="hguide-bullet"><svg viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></div><div class="hguide-text"><strong>Edit</strong> — Click the edit button on a staff row to update details.</div></li>
+              <li class="hguide-item"><div class="hguide-bullet"><svg viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/></svg></div><div class="hguide-text"><strong>Delete</strong> — Click the trash icon and confirm the deletion prompt.</div></li>
+              <li class="hguide-item"><div class="hguide-bullet"><svg viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></div><div class="hguide-text"><strong>View</strong> — All active and inactive staff appear in the directory table.</div></li>
+            </ul>
+          </div>
+
+          <!-- RESERVATIONS -->
+          <div class="hcard hc-blue">
+            <div class="hcard-head">
+              <div class="hcard-icon"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg></div>
+              <div class="hcard-title">Reservations</div>
+            </div>
+            <ul class="hguide-list">
+              <li class="hguide-item"><div class="hguide-bullet"><svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></div><div class="hguide-text"><strong>New Reservation</strong> — Fill in guest details, select room type, and set check-in / check-out dates. The system will automatically check for room conflicts.</div></li>
+              <li class="hguide-item"><div class="hguide-bullet"><svg viewBox="0 0 24 24"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 .49-3.51"/></svg></div><div class="hguide-text"><strong>Update Status</strong> — Use the dropdown in the Actions column to update reservation status.</div></li>
+              <li class="hguide-item"><div class="hguide-bullet"><svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></div><div class="hguide-text"><strong>Cancel</strong> — Click the cancel icon next to a reservation to cancel it.</div></li>
+            </ul>
+          </div>
+
+          <!-- BILLING -->
+          <div class="hcard hc-blue">
+            <div class="hcard-head">
+              <div class="hcard-icon"><svg viewBox="0 0 24 24"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg></div>
+              <div class="hcard-title">Billing</div>
+            </div>
+            <div class="htip-grid">
+              <div class="htip"><div class="htip-icon"><svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg></div><div class="htip-label">Calculate Bill</div><div class="htip-desc">Enter Reservation Number to compute total with 12% tax applied</div></div>
+              <div class="htip"><div class="htip-icon"><svg viewBox="0 0 24 24"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg></div><div class="htip-label">Print Bill</div><div class="htip-desc">Click "Print Bill" to send the receipt directly to your printer</div></div>
+              <div class="htip" style="grid-column:span 2"><div class="htip-icon"><svg viewBox="0 0 24 24"><rect x="5" y="2" width="14" height="20" rx="2"/><line x1="12" y1="18" x2="12.01" y2="18"/></svg></div><div class="htip-label">Guest E-Bill Access</div><div class="htip-desc">Guests can view their e-bill on the login screen using only their reservation number — no account needed</div></div>
+            </div>
+          </div>
+
+          <!-- LOGOUT -->
+          <div class="hcard hc-blue">
+            <div class="hcard-head">
+              <div class="hcard-icon"><svg viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg></div>
+              <div class="hcard-title">Exit / Logout</div>
+            </div>
+            <div class="hcard-body">Click the <strong>Exit / Logout</strong> button at the bottom of the sidebar to securely end your session and return to the login screen.</div>
+          </div>
+
+        </div>
+      </div>
+
+    </div><!-- /content -->
+  </div><!-- /main -->
+</div><!-- /app -->
+
+<!-- ── Edit Staff Modal ── -->
+<div id="modal-staff" class="modal-overlay">
+  <div class="modal">
+    <h3>Edit Staff Account</h3>
+    <div id="modal-staff-alert" class="alert"></div>
+    <input type="hidden" id="m-id">
+    <div class="form-grid">
+      <div class="field"><label>Full Name</label><input id="m-name" type="text"></div>
+      <div class="field"><label>Email</label>   <input id="m-email" type="email"></div>
+      <div class="field"><label>Role</label>
+        <select id="m-role"><option value="staff">Staff</option><option value="admin">Admin</option></select>
+      </div>
+      <div class="field"><label>Status</label>
+        <select id="m-status"><option value="active">Active</option><option value="inactive">Inactive</option></select>
+      </div>
+      <div class="field span-full"><label>New Password <em style="font-size:10px;color:var(--muted)">(leave blank to keep current)</em></label>
+        <input id="m-pass" type="password" placeholder="New password">
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeModal('modal-staff')">Cancel</button>
+      <button class="btn btn-gold" onclick="saveStaff()">Save Changes</button>
+    </div>
+  </div>
+</div>
+
+<!-- ── Update Reservation Status Modal ── -->
+<div id="modal-res" class="modal-overlay">
+  <div class="modal">
+    <h3>Update Reservation</h3>
+    <input type="hidden" id="mr-resno">
+    <div class="field"><label>New Status</label>
+      <select id="mr-status">
+        <option value="confirmed">Confirmed</option>
+        <option value="checked_in">Checked In</option>
+        <option value="checked_out">Checked Out</option>
+        <option value="cancelled">Cancelled</option>
+      </select>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeModal('modal-res')">Cancel</button>
+      <button class="btn btn-gold" onclick="saveResStatus()">Update</button>
+    </div>
+  </div>
+</div>
+
+<script>
+  const API = 'http://localhost:8080/api';
+
+  // ── Session ────────────────────────────────────────────────────────────────
+  const USER = JSON.parse(sessionStorage.getItem('user') || 'null');
+  if (!USER) { window.location.href = 'index.html'; }
+
+  // Populate UI
+  document.getElementById('user-name-label').textContent = USER.fullName;
+  document.getElementById('user-role-label').textContent = USER.role.toUpperCase();
+  document.getElementById('avatar-initials').textContent =
+          USER.fullName.split(' ').map(n=>n[0]).join('').substring(0,2).toUpperCase();
+
+  // Show admin-only items
+  if (USER.role === 'admin') {
+    document.querySelectorAll('.admin-only').forEach(el => el.style.display = 'flex');
+  }
+
+  // Date in topbar
+  document.getElementById('topbar-date').textContent =
+          new Date().toLocaleDateString('en-PH', {weekday:'long',year:'numeric',month:'long',day:'numeric'});
+
+  // ── Navigation ────────────────────────────────────────────────────────────
+  function navigate(page) {
+    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+    document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+    document.getElementById('page-'+page).classList.add('active');
+    document.querySelector(`[data-page="${page}"]`).classList.add('active');
+    const titles = {dashboard:'Dashboard', staff:'Staff Accounts', reservations:'Reservations', billing:'Billing', help:'Help & Guidelines'};
+    document.getElementById('page-title').textContent = titles[page] || page;
+    // Lazy-load data
+    if (page === 'dashboard')    loadDashboard();
+    if (page === 'staff')        loadStaff();
+    if (page === 'reservations') { loadReservations(); loadRates(); }
+  }
+
+  // ── Helpers ───────────────────────────────────────────────────────────────
+  function showAlert(id, type, msg) {
+    const el = document.getElementById(id);
+    el.className = 'alert '+type; el.textContent = msg;
+    setTimeout(() => el.className = 'alert', 4000);
+  }
+  function fmt(v) { return 'LKR'+parseFloat(v).toLocaleString('en-PH',{minimumFractionDigits:2}); }
+  function badge(val, map) {
+    const cls = map[val] || 'badge-staff';
+    return `<span class="badge ${cls}">${val.replace('_',' ')}</span>`;
+  }
+  const statusBadges = { admin:'badge-admin', staff:'badge-staff', active:'badge-active',
+    inactive:'badge-inactive', confirmed:'badge-confirmed', checked_in:'badge-checked_in',
+    checked_out:'badge-checked_out', cancelled:'badge-cancelled' };
+
+  async function api(path, opts={}) {
+    const r = await fetch(API+path, { headers:{'Content-Type':'application/json'}, ...opts });
+    return r.json();
+  }
+
+  // ── Modal ─────────────────────────────────────────────────────────────────
+  function openModal(id) { document.getElementById(id).classList.add('open'); }
+  function closeModal(id){ document.getElementById(id).classList.remove('open'); }
+  document.querySelectorAll('.modal-overlay').forEach(o =>
+          o.addEventListener('click', e => { if(e.target===o) o.classList.remove('open'); }));
+
+  // ══════════════════════════════════════════════════════════════════════════
+  // DASHBOARD
+  // ══════════════════════════════════════════════════════════════════════════
+  async function loadDashboard() {
+    try {
+      const [resData, staffData] = await Promise.all([
+        api('/reservations'), api('/staff')
+      ]);
+      const res = resData.reservations || [];
+      const stf = staffData.staff || [];
+      document.getElementById('stat-total').textContent = res.length;
+      document.getElementById('stat-confirmed').textContent = res.filter(r=>r.status==='confirmed').length;
+      document.getElementById('stat-checkedin').textContent = res.filter(r=>r.status==='checked_in').length;
+      document.getElementById('stat-staff').textContent = stf.length;
+      const recent = res.slice(0,8);
+      document.getElementById('dash-table').innerHTML = recent.length ? recent.map(r => `
+      <tr>
+        <td>${r.resNo}</td>
+        <td>${r.guestName}</td>
+        <td>${r.roomType}</td>
+        <td>${r.checkIn}</td>
+        <td>${r.checkOut}</td>
+        <td>${badge(r.status, statusBadges)}</td>
+      </tr>`).join('') :
+              `<tr><td colspan="6" style="text-align:center;padding:20px;color:var(--muted)">No reservations yet</td></tr>`;
+    } catch(e) { console.error(e); }
+  }
+
+  // ══════════════════════════════════════════════════════════════════════════
+  // STAFF CRUD (Admin)
+  // ══════════════════════════════════════════════════════════════════════════
+  async function loadStaff() {
+    const data = await api('/staff');
+    const rows = (data.staff||[]).map(s => `
+    <tr>
+      <td>${s.id}</td>
+      <td>${s.fullName}</td>
+      <td>${s.username}</td>
+      <td>${badge(s.role, statusBadges)}</td>
+      <td>${s.email||'—'}</td>
+      <td>${badge(s.status, statusBadges)}</td>
+      <td>
+        <button class="btn btn-ghost btn-sm" onclick="openEditStaff(${s.id},'${esc(s.fullName)}','${esc(s.email||'')}','${s.role}','${s.status}')">✏️ Edit</button>
+        <button class="btn btn-danger btn-sm" onclick="deleteStaff(${s.id},'${esc(s.fullName)}')" style="margin-left:4px">🗑</button>
+      </td>
+    </tr>`).join('');
+    document.getElementById('staff-table').innerHTML = rows ||
+            `<tr><td colspan="7" style="text-align:center;padding:20px;color:var(--muted)">No staff found</td></tr>`;
+  }
+
+  async function createStaff() {
+    const payload = {
+      fullName: document.getElementById('s-name').value.trim(),
+      username: document.getElementById('s-user').value.trim(),
+      password: document.getElementById('s-pass').value.trim(),
+      email:    document.getElementById('s-email').value.trim(),
+      role:     document.getElementById('s-role').value,
+    };
+    if (!payload.fullName || !payload.username || !payload.password)
+      return showAlert('staff-form-alert','error','Full name, username and password are required.');
+    const data = await api('/staff', { method:'POST', body: JSON.stringify(payload) });
+    if (data.success) {
+      showAlert('staff-form-alert','success', data.message);
+      ['s-name','s-user','s-pass','s-email'].forEach(id => document.getElementById(id).value = '');
+      loadStaff();
+    } else { showAlert('staff-form-alert','error', data.message); }
+  }
+
+  function openEditStaff(id, name, email, role, status) {
+    document.getElementById('m-id').value    = id;
+    document.getElementById('m-name').value  = name;
+    document.getElementById('m-email').value = email;
+    document.getElementById('m-role').value  = role;
+    document.getElementById('m-status').value= status;
+    document.getElementById('m-pass').value  = '';
+    document.getElementById('modal-staff-alert').className = 'alert';
+    openModal('modal-staff');
+  }
+
+  async function saveStaff() {
+    const id = document.getElementById('m-id').value;
+    const payload = {
+      fullName: document.getElementById('m-name').value.trim(),
+      email:    document.getElementById('m-email').value.trim(),
+      role:     document.getElementById('m-role').value,
+      status:   document.getElementById('m-status').value,
+      password: document.getElementById('m-pass').value.trim(),
+    };
+    const data = await api('/staff/'+id, { method:'PUT', body: JSON.stringify(payload) });
+    if (data.success) {
+      showAlert('modal-staff-alert','success', data.message);
+      setTimeout(() => { closeModal('modal-staff'); loadStaff(); }, 800);
+    } else { showAlert('modal-staff-alert','error', data.message); }
+  }
+
+  async function deleteStaff(id, name) {
+    // [opt] confirmDelete()
+    if (!confirm(`Delete staff account for "${name}"?\nThis action cannot be undone.`)) return;
+    const data = await api('/staff/'+id, { method:'DELETE' });
+    if (data.success) { showAlert('staff-table-alert','success', data.message); loadStaff(); }
+    else { showAlert('staff-table-alert','error', data.message); }
+  }
+
+  // ══════════════════════════════════════════════════════════════════════════
+  // RESERVATIONS
+  // ══════════════════════════════════════════════════════════════════════════
+  async function loadRates() {
+    const data = await api('/rates');
+    const sel = document.getElementById('r-room');
+    sel.innerHTML = '<option value="">— Select Room —</option>';
+    (data.rates||[]).forEach(r => {
+      const opt = document.createElement('option');
+      opt.value = r.roomType;
+      opt.textContent = `${r.roomType} — ${fmt(r.rate)}/night`;
+      sel.appendChild(opt);
+    });
+  }
+
+  async function loadReservations() {
+    const data = await api('/reservations');
+    const rows = (data.reservations||[]).map(r => `
+    <tr>
+      <td>${r.resNo}</td>
+      <td>${r.guestName}</td>
+      <td>${r.roomType}</td>
+      <td>${r.checkIn}</td>
+      <td>${r.checkOut}</td>
+      <td>${r.nights}</td>
+      <td>${fmt(r.total)}</td>
+      <td>${badge(r.status, statusBadges)}</td>
+      <td>
+        <button class="btn btn-ghost btn-sm" onclick="openResModal('${r.resNo}','${r.status}')">✏️</button>
+        <button class="btn btn-danger btn-sm" onclick="cancelReservation('${r.resNo}')" style="margin-left:4px">🗑</button>
+      </td>
+    </tr>`).join('');
+    document.getElementById('res-table').innerHTML = rows ||
+            `<tr><td colspan="9" style="text-align:center;padding:20px;color:var(--muted)">No reservations yet</td></tr>`;
+  }
+
+  async function addReservation() {
+    const payload = {
+      guestName:    document.getElementById('r-guest').value.trim(),
+      guestContact: document.getElementById('r-contact').value.trim(),
+      roomType:     document.getElementById('r-room').value,
+      checkIn:      document.getElementById('r-checkin').value,
+      checkOut:     document.getElementById('r-checkout').value,
+      createdBy:    USER.id,
+    };
+    if (!payload.guestName || !payload.roomType || !payload.checkIn || !payload.checkOut)
+      return showAlert('res-form-alert','error','All required fields must be filled.');
+    if (payload.checkIn >= payload.checkOut)
+      return showAlert('res-form-alert','error','Check-out must be after check-in.');
+    const data = await api('/reservations', { method:'POST', body: JSON.stringify(payload) });
+    if (data.success) {
+      showAlert('res-form-alert','success', `Reservation ${data.resNo} confirmed!`);
+      ['r-guest','r-contact','r-checkin','r-checkout'].forEach(id => document.getElementById(id).value='');
+      document.getElementById('r-room').value='';
+      loadReservations();
+    } else { showAlert('res-form-alert','warn', data.message); }
+  }
+
+  function openResModal(resNo, status) {
+    document.getElementById('mr-resno').value  = resNo;
+    document.getElementById('mr-status').value = status;
+    openModal('modal-res');
+  }
+
+  async function saveResStatus() {
+    const resNo  = document.getElementById('mr-resno').value;
+    const status = document.getElementById('mr-status').value;
+    const data = await api('/reservations/'+resNo, { method:'PUT', body: JSON.stringify({status}) });
+    if (data.success) { closeModal('modal-res'); loadReservations(); }
+  }
+
+  async function cancelReservation(resNo) {
+    if (!confirm(`Cancel reservation ${resNo}?`)) return;
+    const data = await api('/reservations/'+resNo, { method:'DELETE' });
+    if (data.success) { showAlert('res-table-alert','success','Reservation cancelled.'); loadReservations(); }
+    else { showAlert('res-table-alert','error', data.message); }
+  }
+
+  // ══════════════════════════════════════════════════════════════════════════
+  // BILLING
+  // ══════════════════════════════════════════════════════════════════════════
+  let currentBill = null;
+
+  async function calcBill() {
+    const resNo = document.getElementById('b-resno').value.trim().toUpperCase();
+    if (!resNo) return showAlert('billing-alert','error','Enter a reservation number.');
+    const data = await api('/billing/'+resNo);
+    if (!data.success) { showAlert('billing-alert','error', data.message); return; }
+    currentBill = data;
+    renderReceipt(data);
+    document.getElementById('receipt-area').style.display = 'block';
+    document.getElementById('print-btn').style.display = '';
+  }
+
+  function renderReceipt(d) {
+    const rows = [
+      ['Reservation No.', d.resNo],
+      ['Guest Name',      d.guestName],
+      ['Contact No.',     d.guestContact||'—'],
+      ['Room Type',       d.roomType],
+      ['Check-in',        d.checkIn],
+      ['Check-out',       d.checkOut],
+      ['No. of Nights',   d.nights],
+      ['Rate / Night',    fmt(d.ratePerNight)],
+      ['Subtotal',        fmt(d.subtotal)],
+      ['VAT (12%)',       fmt(d.tax)],
+    ];
+    document.getElementById('receipt-rows').innerHTML =
+            rows.map(([k,v]) => `<div class="receipt-row"><span>${k}</span><span>${v}</span></div>`).join('') +
+            `<div class="receipt-row total-row"><span>TOTAL AMOUNT DUE</span><span>${fmt(d.total)}</span></div>` +
+            `<div class="receipt-row"><span>Status</span><span>${d.status.replace('_',' ').toUpperCase()}</span></div>`;
+  }
+
+  async function printBill() {
+    const resNo = document.getElementById('b-resno').value.trim().toUpperCase();
+    await api('/billing/print/'+resNo, { method:'POST' });
+    window.print(); // printSuccess()
+  }
+
+  // ══════════════════════════════════════════════════════════════════════════
+  // LOGOUT / EXIT
+  // ══════════════════════════════════════════════════════════════════════════
+  function doLogout() {
+    if (confirm('Log out and exit the system?')) {
+      sessionStorage.removeItem('user');
+      window.location.href = 'index.html';
+    }
+  }
+
+  // ── Utility ───────────────────────────────────────────────────────────────
+  function esc(s) { return (s||'').replace(/'/g,"\\'").replace(/"/g,'&quot;'); }
+
+  // ── Dark Mode ─────────────────────────────────────────────────────────────
+  function toggleDark() {
+    const isDark = document.body.classList.toggle('dark');
+    document.getElementById('dark-label').textContent = isDark ? 'Light' : 'Dark';
+    document.getElementById('toggle-icon').textContent = isDark ? '☀️' : '🌙';
+    localStorage.setItem('darkMode', isDark);
+  }
+  if (localStorage.getItem('darkMode') === 'true') {
+    document.body.classList.add('dark');
+    document.getElementById('dark-label').textContent = 'Light';
+    document.getElementById('toggle-icon').textContent = '☀️';
+  }
+
+  // ── Init ──────────────────────────────────────────────────────────────────
+  loadDashboard();
+  loadRates();
+</script>
+</body>
+</html>

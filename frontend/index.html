@@ -1,0 +1,893 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ocean View Resort — Portal</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400;1,700&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --sand:     #f0f5fa;
+      --sand2:    #e2eaf4;
+      --sand3:    #c8d8ec;
+      --teal:     #5b9bd5;
+      --teal2:    #3a7bbf;
+      --teal3:    #2a5f9e;
+      --palm:     #4a8cc9;
+      --coral:    #d4875a;
+      --coral2:   #e8a070;
+      --white:    #ffffff;
+      --muted:    #8a97a8;
+      --error:    #c0392b;
+      --success:  #3a7bbf;
+      --ink:      #1a2535;
+    }
+
+    body {
+      font-family: 'Outfit', sans-serif;
+      min-height: 100vh;
+      background: var(--sand);
+      display: flex;
+      align-items: stretch;
+      overflow: hidden;
+    }
+
+    /* ── Animated background shapes ── */
+    .bg-layer {
+      position: fixed; inset: 0;
+      overflow: hidden;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .bg-circle {
+      position: absolute;
+      border-radius: 50%;
+      opacity: .12;
+      animation: drift 18s ease-in-out infinite alternate;
+    }
+    .bg-circle:nth-child(1) {
+      width: 600px; height: 600px;
+      background: var(--teal);
+      top: -200px; left: -150px;
+      animation-delay: 0s;
+    }
+    .bg-circle:nth-child(2) {
+      width: 400px; height: 400px;
+      background: var(--coral);
+      bottom: -100px; right: 40%;
+      animation-delay: -6s;
+      opacity: .08;
+    }
+    .bg-circle:nth-child(3) {
+      width: 300px; height: 300px;
+      background: var(--palm);
+      top: 30%; right: -80px;
+      animation-delay: -12s;
+      opacity: .1;
+    }
+
+    @keyframes drift {
+      from { transform: translate(0, 0) scale(1); }
+      to   { transform: translate(30px, 20px) scale(1.05); }
+    }
+
+    /* ── Layout ── */
+    .layout {
+      position: relative;
+      z-index: 1;
+      display: grid;
+      grid-template-columns: 1.1fr 1fr;
+      width: 100%;
+      min-height: 100vh;
+    }
+
+    /* ── Left: Hero Panel ── */
+    .hero {
+      position: relative;
+      background: linear-gradient(145deg, #2a5f9e 0%, #3a7bbf 50%, #5b9bd5 100%);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      padding: 52px 60px;
+      overflow: hidden;
+    }
+
+    .hero-bg {
+      position: absolute;
+      inset: 0;
+      background:
+              linear-gradient(160deg, rgba(10,56,56,0) 40%, rgba(10,56,56,.9) 100%),
+              repeating-linear-gradient(
+                      45deg,
+                      rgba(255,255,255,.015) 0px,
+                      rgba(255,255,255,.015) 1px,
+                      transparent 1px,
+                      transparent 40px
+              );
+      pointer-events: none;
+    }
+
+    /* Decorative wave lines */
+    .hero-waves {
+      position: absolute;
+      bottom: 0; left: 0; right: 0;
+      height: 300px;
+      overflow: hidden;
+      opacity: .12;
+    }
+    .hero-waves svg {
+      width: 100%;
+      height: 100%;
+    }
+
+    .hero-top { position: relative; z-index: 1; }
+
+    .logo-mark {
+      display: inline-flex;
+      align-items: center;
+      gap: 14px;
+      margin-bottom: 0;
+    }
+
+    .logo-emblem {
+      width: 68px; height: 68px;
+      border: 2px solid rgba(242,237,228,.3);
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 32px;
+      color: var(--sand);
+      position: relative;
+    }
+    .logo-emblem::after {
+      content: '';
+      position: absolute;
+      inset: 5px;
+      border-radius: 50%;
+      border: 1px solid rgba(242,237,228,.15);
+    }
+
+    .logo-text h1 {
+      font-family: 'Playfair Display', serif;
+      font-size: 28px;
+      font-weight: 700;
+      color: var(--sand);
+      letter-spacing: .5px;
+      line-height: 1.1;
+    }
+    .logo-text span {
+      display: block;
+      font-size: 13px;
+      font-weight: 500;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      color: rgba(242,237,228,.45);
+      margin-top: 4px;
+    }
+
+    .hero-mid {
+      position: relative;
+      z-index: 1;
+      flex: 1;
+      display: flex;
+      align-items: center;
+    }
+
+    .hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(242,237,228,.12);
+      border: 1px solid rgba(242,237,228,.2);
+      border-radius: 50px;
+      padding: 6px 14px;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 2.5px;
+      text-transform: uppercase;
+      color: rgba(242,237,228,.75);
+      margin-bottom: 24px;
+    }
+    .hero-badge::before {
+      content: '';
+      width: 7px; height: 7px;
+      border-radius: 50%;
+      background: var(--coral2);
+      flex-shrink: 0;
+    }
+
+    .hero-headline {
+      font-family: 'Playfair Display', serif;
+    }
+    .hero-headline .line1 {
+      display: block;
+      font-size: 62px;
+      font-weight: 700;
+      font-style: normal;
+      color: var(--sand);
+      line-height: 1.05;
+      letter-spacing: -1.5px;
+    }
+    .hero-headline .line2 {
+      display: block;
+      font-size: 62px;
+      font-weight: 700;
+      color: var(--sand);
+      line-height: 1.05;
+      letter-spacing: -1.5px;
+    }
+    .hero-headline .line3 {
+      display: inline;
+      font-size: 62px;
+      font-weight: 400;
+      font-style: italic;
+      color: var(--coral2);
+      line-height: 1.05;
+      letter-spacing: -1px;
+    }
+
+    .hero-desc {
+      margin-top: 24px;
+      font-size: 15px;
+      line-height: 1.7;
+      color: rgba(242,237,228,.6);
+      max-width: 380px;
+      font-weight: 300;
+    }
+
+    .hero-bottom {
+      position: relative;
+      z-index: 1;
+    }
+
+    .hero-stats {
+      display: flex;
+      gap: 40px;
+    }
+    .stat-item {}
+    .stat-num {
+      font-family: 'Playfair Display', serif;
+      font-size: 28px;
+      font-weight: 700;
+      color: var(--coral2);
+    }
+    .stat-label {
+      font-size: 11px;
+      font-weight: 500;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: rgba(242,237,228,.35);
+      margin-top: 2px;
+    }
+
+    /* Vertical divider removed */
+
+    /* ── Right: Form Panel ── */
+    .form-panel {
+      background: #ffffff;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      padding: 64px 56px;
+      position: relative;
+    }
+
+    /* top accent removed */
+
+    /* ── Tabs ── */
+    .tabs {
+      display: flex;
+      gap: 0;
+      background: var(--sand2);
+      border-radius: 50px;
+      padding: 5px;
+      margin-bottom: 40px;
+    }
+
+    .tab-btn {
+      flex: 1;
+      padding: 10px 16px;
+      background: transparent;
+      border: none;
+      border-radius: 50px;
+      font-family: 'Outfit', sans-serif;
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--muted);
+      cursor: pointer;
+      transition: all .25s;
+      letter-spacing: .3px;
+    }
+    .tab-btn.active {
+      background: var(--white);
+      color: var(--ink);
+      box-shadow: 0 2px 12px rgba(0,0,0,.1);
+    }
+
+    /* ── Form heading ── */
+    .form-heading {
+      margin-bottom: 32px;
+    }
+    .form-eyebrow {
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      color: var(--coral);
+      margin-bottom: 8px;
+    }
+    .form-title {
+      font-family: 'Playfair Display', serif;
+      font-size: 32px;
+      font-weight: 700;
+      color: var(--ink);
+      line-height: 1.2;
+    }
+    .form-sub {
+      font-size: 14px;
+      color: var(--muted);
+      margin-top: 6px;
+      font-weight: 300;
+    }
+
+    /* ── Alert ── */
+    .alert {
+      padding: 12px 16px;
+      border-radius: 8px;
+      font-size: 13px;
+      margin-bottom: 20px;
+      display: none;
+      font-weight: 400;
+    }
+    .alert.error   { background: #fdf0ee; color: var(--error); border-left: 3px solid var(--error); display: block; }
+    .alert.success { background: #eef6f6; color: var(--success); border-left: 3px solid var(--success); display: block; }
+
+    /* ── Fields ── */
+    .form-section { display: none; }
+    .form-section.active { display: block; }
+
+    .field { margin-bottom: 20px; }
+    .field label {
+      display: block;
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      color: var(--ink);
+      margin-bottom: 8px;
+      opacity: .6;
+    }
+    .input-wrap { position: relative; }
+    .field input {
+      width: 100%;
+      background: var(--sand);
+      border: 1.5px solid transparent;
+      border-radius: 10px;
+      padding: 13px 16px;
+      color: var(--ink);
+      font-family: 'Outfit', sans-serif;
+      font-size: 14px;
+      font-weight: 400;
+      outline: none;
+      transition: all .2s;
+    }
+    .field input:focus {
+      background: var(--white);
+      border-color: var(--teal);
+      box-shadow: 0 0 0 3px rgba(26,107,107,.1);
+    }
+    .field input::placeholder { color: var(--sand3); }
+
+    .btn-primary {
+      width: 100%;
+      padding: 14px;
+      background: var(--teal2);
+      border: none;
+      border-radius: 10px;
+      color: var(--white);
+      font-family: 'Outfit', sans-serif;
+      font-size: 14px;
+      font-weight: 600;
+      letter-spacing: .5px;
+      cursor: pointer;
+      transition: all .2s;
+      margin-top: 8px;
+      position: relative;
+      overflow: hidden;
+    }
+    .btn-primary::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(135deg, rgba(255,255,255,.1), transparent);
+      pointer-events: none;
+    }
+    .btn-primary:hover {
+      background: var(--teal);
+      transform: translateY(-1px);
+      box-shadow: 0 8px 24px rgba(10,56,56,.25);
+    }
+    .btn-primary:active { transform: translateY(0); }
+    .btn-primary:disabled { opacity: .5; cursor: not-allowed; transform: none; box-shadow: none; }
+
+    /* ── Bill Card ── */
+    .bill-card {
+      background: var(--sand);
+      border-radius: 14px;
+      padding: 24px;
+      margin-top: 20px;
+      display: none;
+      animation: slideIn .3s ease both;
+    }
+    .bill-card.visible { display: block; }
+
+    @keyframes slideIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .bill-card-header {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 18px;
+      padding-bottom: 14px;
+      border-bottom: 1px solid var(--sand3);
+    }
+    .bill-card-header h3 {
+      font-family: 'Playfair Display', serif;
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--ink);
+    }
+    .bill-badge {
+      margin-left: auto;
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      color: var(--teal);
+      background: rgba(26,107,107,.1);
+      padding: 4px 10px;
+      border-radius: 50px;
+    }
+
+    .bill-row {
+      display: flex;
+      justify-content: space-between;
+      font-size: 13px;
+      color: var(--muted);
+      padding: 6px 0;
+    }
+    .bill-row span:last-child { color: var(--ink); font-weight: 500; }
+    .bill-row.total {
+      padding: 12px 0 0;
+      margin-top: 8px;
+      border-top: 1.5px dashed var(--sand3);
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--ink);
+    }
+    .bill-row.total span:last-child { color: var(--coral); font-size: 17px; }
+
+    /* ── Footer note ── */
+    .form-footer {
+      margin-top: 28px;
+      text-align: center;
+      font-size: 12px;
+      color: var(--sand3);
+    }
+
+    /* ── Dark Mode ── */
+    body.dark {
+      --sand:     #1a2535;
+      --sand2:    #223045;
+      --sand3:    #2e3f58;
+      --teal:     #5b9bd5;
+      --teal2:    #3a7bbf;
+      --teal3:    #2a5f9e;
+      --palm:     #4a8cc9;
+      --coral:    #e8a070;
+      --coral2:   #f0b888;
+      --white:    #1e2d42;
+      --muted:    #9ab0c8;
+      --error:    #e05555;
+      --success:  #5b9bd5;
+      --ink:      #e8f0fa;
+    }
+    body.dark .form-panel {
+      background: #1e2d42;
+    }
+    body.dark .hero {
+      background: linear-gradient(145deg, #0d1f3c 0%, #1a2f52 50%, #243d66 100%);
+    }
+    /* Hero text fixes */
+    body.dark .hero-headline .line1,
+    body.dark .hero-headline .line2 {
+      color: #e8f0fa;
+    }
+    body.dark .hero-headline .line3 {
+      color: #f0b888;
+    }
+    body.dark .hero-desc {
+      color: rgba(232, 240, 250, 0.75);
+    }
+    body.dark .logo-text h1 {
+      color: #e8f0fa;
+    }
+    body.dark .logo-text span {
+      color: rgba(232, 240, 250, 0.6);
+    }
+    body.dark .stat-num {
+      color: #f0b888;
+    }
+    body.dark .stat-label {
+      color: rgba(232, 240, 250, 0.5);
+    }
+    body.dark .hero-badge {
+      color: rgba(232, 240, 250, 0.85);
+      border-color: rgba(232, 240, 250, 0.25);
+    }
+    /* Form text fixes */
+    body.dark .form-title {
+      color: #e8f0fa;
+    }
+    body.dark .form-sub {
+      color: #9ab0c8;
+    }
+    body.dark .field label {
+      color: #e8f0fa;
+    }
+    body.dark .form-footer {
+      color: #4a6080;
+    }
+    body.dark .bill-card-header h3 {
+      color: #e8f0fa;
+    }
+    body.dark .bill-row span:last-child {
+      color: #e8f0fa;
+    }
+    body.dark .field input {
+      background: #223045;
+      color: #e8f0fa;
+      border-color: #2e3f58;
+    }
+    body.dark .field input:focus {
+      background: #2a3a52;
+      border-color: var(--teal);
+    }
+    body.dark .field input::placeholder { color: #4a6080; }
+    body.dark .tabs { background: #223045; }
+    body.dark .tab-btn { color: #9ab0c8; }
+    body.dark .tab-btn.active { background: #2e3f58; color: #e8f0fa; }
+    body.dark .bill-card { background: #223045; }
+    body.dark .alert.error   { background: #2e1a1a; }
+    body.dark .alert.success { background: #1a2e2e; }
+
+    /* ── Dark Mode Toggle Button ── */
+    .dark-toggle {
+      position: fixed;
+      top: 20px;
+      right: 24px;
+      z-index: 100;
+      background: var(--white);
+      border: 1.5px solid var(--sand3);
+      border-radius: 50px;
+      padding: 8px 16px;
+      font-family: 'Outfit', sans-serif;
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--ink);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      transition: all .25s;
+      box-shadow: 0 2px 12px rgba(0,0,0,.08);
+    }
+    .dark-toggle:hover {
+      box-shadow: 0 4px 16px rgba(0,0,0,.15);
+      transform: translateY(-1px);
+    }
+    .dark-toggle .toggle-icon { font-size: 15px; }
+    @media (max-width: 768px) {
+      .layout { grid-template-columns: 1fr; }
+      .hero { display: none; }
+      .layout::after { display: none; }
+      .form-panel { padding: 40px 28px; min-height: 100vh; }
+    }
+
+    /* ── Entrance animations ── */
+    .form-panel > * {
+      animation: fadeUp .5s ease both;
+    }
+    .form-panel > *:nth-child(1) { animation-delay: .1s; }
+    .form-panel > *:nth-child(2) { animation-delay: .2s; }
+    .form-panel > *:nth-child(3) { animation-delay: .3s; }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(16px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .hero-top, .hero-mid, .hero-bottom {
+      animation: fadeUp .7s ease both;
+    }
+    .hero-mid  { animation-delay: .1s; }
+    .hero-bottom { animation-delay: .2s; }
+  </style>
+</head>
+<body>
+
+<div class="bg-layer">
+  <div class="bg-circle"></div>
+  <div class="bg-circle"></div>
+  <div class="bg-circle"></div>
+</div>
+
+<!-- Dark Mode Toggle -->
+<button class="dark-toggle" onclick="toggleDark()" id="dark-btn">
+  <span class="toggle-icon">🌙</span>
+  <span id="dark-label">Dark Mode</span>
+</button>
+
+<div class="layout">
+
+  <!-- ══ Hero ══ -->
+  <div class="hero">
+    <div class="hero-bg"></div>
+    <div class="hero-waves">
+      <svg viewBox="0 0 800 300" preserveAspectRatio="none" fill="none">
+        <path d="M0 200 Q200 100 400 200 Q600 300 800 200 L800 300 L0 300 Z" fill="rgba(242,237,228,1)"/>
+        <path d="M0 230 Q200 140 400 230 Q600 320 800 230 L800 300 L0 300 Z" fill="rgba(242,237,228,.5)"/>
+      </svg>
+    </div>
+
+    <div class="hero-top">
+      <div class="logo-mark">
+        <div class="logo-emblem" style="border:none; width:72px; height:72px; padding:0; overflow:hidden;">
+          <svg width="72" height="72" viewBox="0 0 110 110" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+              <linearGradient id="ls" x1="0" y1="0" x2="0" y2="65" gradientUnits="userSpaceOnUse">
+                <stop offset="0%" stop-color="#78C8E8"/>
+                <stop offset="50%" stop-color="#FFD170"/>
+                <stop offset="100%" stop-color="#FF7A30"/>
+              </linearGradient>
+              <linearGradient id="lw" x1="0" y1="65" x2="0" y2="110" gradientUnits="userSpaceOnUse">
+                <stop offset="0%" stop-color="#22A8D8"/>
+                <stop offset="100%" stop-color="#0D6FA8"/>
+              </linearGradient>
+              <radialGradient id="lu" cx="50%" cy="80%" r="60%">
+                <stop offset="0%" stop-color="#FFE84A"/>
+                <stop offset="60%" stop-color="#FFAD20"/>
+                <stop offset="100%" stop-color="#FF6A10"/>
+              </radialGradient>
+              <clipPath id="lc"><circle cx="55" cy="55" r="52"/></clipPath>
+            </defs>
+            <circle cx="55" cy="55" r="54" fill="white"/>
+            <g clip-path="url(#lc)">
+              <rect x="3" y="3" width="104" height="104" fill="url(#ls)"/>
+              <clipPath id="lsc"><rect x="0" y="0" width="110" height="66"/></clipPath>
+              <circle cx="55" cy="66" r="20" fill="url(#lu)" clip-path="url(#lsc)"/>
+              <rect x="3" y="66" width="104" height="47" fill="url(#lw)"/>
+              <path d="M3 72 Q22 65 41 72 Q60 79 79 72 Q95 67 107 72" stroke="white" stroke-width="2.2" stroke-linecap="round" fill="none" opacity="0.8"/>
+              <path d="M3 84 Q22 78 41 84 Q60 90 79 84 Q95 80 107 84" stroke="white" stroke-width="1.4" stroke-linecap="round" fill="none" opacity="0.4"/>
+              <!-- Left palm -->
+              <path d="M28 114 Q30 96 32 80 Q34 70 36 62" stroke="#5A3418" stroke-width="4" stroke-linecap="round" fill="none"/>
+              <path d="M36 62 Q24 54 18 60 Q28 50 36 62" fill="#2E962E"/>
+              <path d="M36 62 Q46 54 54 58 Q44 48 36 62" fill="#34AA34"/>
+              <path d="M36 62 Q30 50 34 43 Q36 55 36 62" fill="#257A25"/>
+              <circle cx="35" cy="66" r="3.5" fill="#7A4D26"/>
+              <circle cx="39" cy="68" r="3" fill="#6B4020"/>
+              <!-- Right palm -->
+              <path d="M82 114 Q80 96 78 80 Q76 70 74 62" stroke="#5A3418" stroke-width="4" stroke-linecap="round" fill="none"/>
+              <path d="M74 62 Q86 54 92 60 Q82 50 74 62" fill="#2E962E"/>
+              <path d="M74 62 Q64 54 56 58 Q66 48 74 62" fill="#34AA34"/>
+              <path d="M74 62 Q80 50 76 43 Q74 55 74 62" fill="#257A25"/>
+              <circle cx="75" cy="66" r="3.5" fill="#7A4D26"/>
+              <circle cx="71" cy="68" r="3" fill="#6B4020"/>
+            </g>
+            <circle cx="55" cy="55" r="52" stroke="rgba(255,255,255,0.3)" stroke-width="1" fill="none"/>
+          </svg>
+        </div>
+        <div class="logo-text">
+          <h1>Ocean View Resort</h1>
+          <span>Staff Management Portal</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="hero-mid">
+      <div>
+        <div class="hero-badge">Sri Lanka's Premier Resort</div>
+        <div class="hero-headline">
+          <span class="line1">Where the sea</span>
+          <span class="line2">meets <span class="line3">serenity.</span></span>
+        </div>
+        <p class="hero-desc">
+          Welcome to the Ocean View Resort management portal.
+          Access reservations, billing, and operations from one unified platform.
+        </p>
+      </div>
+    </div>
+
+    <div class="hero-bottom">
+      <div class="hero-stats">
+        <div class="stat-item">
+          <div class="stat-num">148</div>
+          <div class="stat-label">Rooms</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-num">5★</div>
+          <div class="stat-label">Rating</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-num">24/7</div>
+          <div class="stat-label">Service</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ Form Panel ══ -->
+  <div class="form-panel">
+    <div class="tabs">
+      <button class="tab-btn active" onclick="switchTab('login')">Staff Login</button>
+      <button class="tab-btn"        onclick="switchTab('ebill')">Guest E-Bill</button>
+    </div>
+
+    <!-- Login Form -->
+    <div id="tab-login" class="form-section active">
+      <div class="form-heading">
+        <div class="form-eyebrow">Welcome Back</div>
+        <div class="form-title">Sign in to<br>your portal</div>
+        <div class="form-sub">Access the hotel management system.</div>
+      </div>
+      <div id="login-alert" class="alert"></div>
+      <div class="field">
+        <label>Username</label>
+        <div class="input-wrap">
+          <input id="login-user" type="text" placeholder="Enter your username" autocomplete="username">
+        </div>
+      </div>
+      <div class="field">
+        <label>Password</label>
+        <div class="input-wrap">
+          <input id="login-pass" type="password" placeholder="••••••••" autocomplete="current-password">
+        </div>
+      </div>
+      <button class="btn-primary" id="login-btn" onclick="doLogin()">Sign In →</button>
+      <div class="form-footer">Secure connection · Ocean View Resort © 2025</div>
+    </div>
+
+    <!-- E-Bill Form -->
+    <div id="tab-ebill" class="form-section">
+      <div class="form-heading">
+        <div class="form-eyebrow">Guest Services</div>
+        <div class="form-title">View your<br>e-bill</div>
+        <div class="form-sub">Enter your reservation number to view your detailed bill.</div>
+      </div>
+      <div id="ebill-alert" class="alert"></div>
+      <div class="field">
+        <label>Reservation Number</label>
+        <input id="ebill-resno" type="text" placeholder="e.g. RES-20250301-001">
+      </div>
+      <button class="btn-primary" onclick="lookupEBill()">View Bill →</button>
+
+      <div id="bill-card" class="bill-card">
+        <div class="bill-card-header">
+          <span>📋</span>
+          <h3>Billing Summary</h3>
+          <span class="bill-badge" id="bill-status-badge">Pending</span>
+        </div>
+        <div id="bill-rows"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  const API = 'http://localhost:8080/api';
+
+  function switchTab(tab) {
+    document.querySelectorAll('.tab-btn').forEach((b, i) =>
+            b.classList.toggle('active', (i === 0) === (tab === 'login')));
+    document.getElementById('tab-login').classList.toggle('active', tab === 'login');
+    document.getElementById('tab-ebill').classList.toggle('active', tab === 'ebill');
+    clearAlerts();
+  }
+
+  function showAlert(id, type, msg) {
+    const el = document.getElementById(id);
+    el.className = 'alert ' + type;
+    el.textContent = msg;
+  }
+
+  function clearAlerts() {
+    document.querySelectorAll('.alert').forEach(a => { a.className = 'alert'; a.textContent = ''; });
+    document.getElementById('bill-card').classList.remove('visible');
+  }
+
+  async function doLogin() {
+    const username = document.getElementById('login-user').value.trim();
+    const password = document.getElementById('login-pass').value.trim();
+    const btn = document.getElementById('login-btn');
+    if (!username || !password) { showAlert('login-alert', 'error', 'Please enter username and password.'); return; }
+    btn.disabled = true; btn.textContent = 'Signing in…';
+    try {
+      const res = await fetch(`${API}/auth/login`, {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username, password })
+      });
+      const data = await res.json();
+      if (data.success) {
+        sessionStorage.setItem('user', JSON.stringify(data.user));
+        showAlert('login-alert', 'success', `Welcome, ${data.user.fullName}! Redirecting…`);
+        setTimeout(() => window.location.href = 'dashboard.html', 800);
+      } else {
+        showAlert('login-alert', 'error', data.message || 'Invalid credentials.');
+      }
+    } catch (e) {
+      showAlert('login-alert', 'error', 'Cannot connect to server. Is the backend running?');
+    } finally {
+      btn.disabled = false; btn.textContent = 'Sign In →';
+    }
+  }
+
+  async function lookupEBill() {
+    const resNo = document.getElementById('ebill-resno').value.trim().toUpperCase();
+    if (!resNo) { showAlert('ebill-alert', 'error', 'Please enter a reservation number.'); return; }
+    try {
+      const res  = await fetch(`${API}/ebill/${resNo}`);
+      const data = await res.json();
+      if (!data.success) {
+        showAlert('ebill-alert', 'error', data.message);
+        document.getElementById('bill-card').classList.remove('visible');
+        return;
+      }
+      document.getElementById('ebill-alert').className = 'alert';
+      const fmt = v => `LKR ${parseFloat(v).toLocaleString('en-US', {minimumFractionDigits:2})}`;
+      const rows = [
+        ['Reservation No.', data.resNo], ['Guest Name', data.guestName],
+        ['Room Type', data.roomType], ['Check-in', data.checkIn],
+        ['Check-out', data.checkOut], ['Nights', data.nights],
+        ['Rate / Night', fmt(data.ratePerNight)], ['Subtotal', fmt(data.subtotal)],
+        ['Tax (12%)', fmt(data.tax)],
+      ];
+      document.getElementById('bill-status-badge').textContent = (data.status || 'pending').toUpperCase();
+      document.getElementById('bill-rows').innerHTML =
+              rows.map(([k,v]) => `<div class="bill-row"><span>${k}</span><span>${v}</span></div>`).join('') +
+              `<div class="bill-row total"><span>Total Due</span><span>${fmt(data.total)}</span></div>`;
+      document.getElementById('bill-card').classList.add('visible');
+    } catch (e) {
+      showAlert('ebill-alert', 'error', 'Cannot connect to server.');
+    }
+  }
+
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Enter') {
+      if (document.getElementById('tab-login').classList.contains('active')) doLogin();
+      else lookupEBill();
+    }
+  });
+
+  function toggleDark() {
+    const isDark = document.body.classList.toggle('dark');
+    document.getElementById('dark-label').textContent = isDark ? 'Light Mode' : 'Dark Mode';
+    document.querySelector('.toggle-icon').textContent = isDark ? '☀️' : '🌙';
+    localStorage.setItem('darkMode', isDark);
+  }
+  // Restore preference
+  if (localStorage.getItem('darkMode') === 'true') {
+    document.body.classList.add('dark');
+    document.getElementById('dark-label').textContent = 'Light Mode';
+    document.querySelector('.toggle-icon').textContent = '☀️';
+  }
+
+  if (sessionStorage.getItem('user')) window.location.href = 'dashboard.html';
+</script>
+</body>
+</html>
